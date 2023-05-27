@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="info"></div>
+
+    <script>
+      const info = document.querySelector('#info')
+      let aa = []
+      let bb = []
+      function c1(a) {
+        switch (a) {
+          case 0:
+            info.innerHTML = 0
+          case 1:
+            info.innerHTML = a
+            break
+          case 2:
+            info.innerHTML = a + 1
+            break
+          default:
+            for (let i = 3; i < a + 1; i = i + 2) {
+              aa.push(-i)
+            }
+            for (let j = 2; j < a + 1; j = j + 2) {
+              bb.push(j)
+            }
+            const aaTotal = aa.reduce((x, y) => x + y)
+            const bbTotal = bb.reduce((x, y) => x + y)
+            const Total = 1 + aaTotal + bbTotal
+            info.innerHTML = Total
+        }
+      }
+      c1(13)
+    </script>
+  </body>
+</html>
