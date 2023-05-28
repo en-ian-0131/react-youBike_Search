@@ -6,9 +6,10 @@ import axios from 'axios'
 import districtsData from '../data/Taiwan.json'
 
 function OnePage() {
-  //open Data 資料
+  //接收 open Data 資料
   const [myData, setMyData] = useState([])
-
+  //呈現
+  const [display, setDisplay] = useState([])
   const [city, setCity] = useState([])
 
   // city input
@@ -21,9 +22,13 @@ function OnePage() {
   // 篩選用
   const [keyword, setKeyword] = useState('')
   //可控表單元件用
-  const [inputValue, setInpultValue] = useState(keyword)
+  const [arInputValue, setArInputValue] = useState('')
+  const [arInputShow, setArInputShow] = useState(false)
 
-  // const [optionAllCheck, setOptionAllCheck] = useState(true)
+  //sbi(可借) & bemp(可還) 排序
+  const [whoSort, setWhoSort] = useState('')
+  const [sbiSortType, setSbiSortType] = useState('asc')
+  const [bempSortType, setBempSortType] = useState('asc')
 
   const getYouBikeData = async () => {
     try {
@@ -31,6 +36,7 @@ function OnePage() {
         'https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json'
       )
       setMyData(response.data)
+      setDisplay(response.data)
       setCity(districtsData)
     } catch (error) {
       console.log(error)
@@ -38,35 +44,85 @@ function OnePage() {
     }
   }
 
-  const cityInputKeyword = (city, cityInputValue) => {
+  //呈現縣市搜尋解果 pure function
+  const cityInputOfSearch = (city, cityInputValue) => {
     return city.filter((v, i) => {
       return v.name.includes(cityInputValue)
     })
   }
-
-  const cityFilter = (myData, cityInputValue) => {
+  //縣市搜尋篩選台北 pure function
+  const cityOnlyTaipei = (ar, cityInputValue) => {
     if (cityInputValue === '台北市') {
-      return myData
+      return [...ar]
     } else {
-      return []
+      return [{ sna: '沒有這個地方喔~' }]
     }
   }
 
-  const filterByKeyword = (myData, keyword) => {
+  //站點呈現搜尋內容 pure function
+  const arFilterDisplay = (myData, arInputValue) => {
+    return myData.filter((v, i) => {
+      return v.sna.includes(arInputValue)
+    })
+  }
+  //站點搜尋 pure function
+  const arFilterByKeyword = (myData, keyword) => {
     return myData.filter((v, i) => {
       return v.sna.includes(keyword)
     })
   }
-  console.log(myData)
-  console.log(city)
+
+  //可借pure function
+  const sortOfSbi = (myData, sbiSortType) => {
+    switch (sbiSortType) {
+      case 'ase':
+        return [...myData].sort((a, b) => {
+          return a.sbi - b.sbi
+        })
+      case 'desc':
+        return [...myData].sort((a, b) => {
+          return b.sbi - a.sbi
+        })
+      default:
+        return [...myData]
+    }
+  }
+  //可還pure function
+  const sortOfBemp = (myData, dataSortType) => {
+    switch (dataSortType) {
+      case 'ase':
+        return [...myData].sort((a, b) => {
+          return a.bemp - b.bemp
+        })
+      case 'desc':
+        return [...myData].sort((a, b) => {
+          return b.bemp - a.bemp
+        })
+      default:
+        return [...myData]
+    }
+  }
+  //可借或可還單排排序 pure function
+  const sortOfType = (newData, whoSort, sbiSortType, bempSortType) => {
+    switch (whoSort) {
+      case 'sbi':
+        return (newData = sortOfSbi(newData, sbiSortType))
+      case 'bemp':
+      default:
+        return (newData = sortOfBemp(newData, bempSortType))
+    }
+  }
+
   useEffect(() => {
-    console.log('uesEffect')
     getYouBikeData()
-    // setInpultValue(keyword)
-  }, [])
+    setArInputValue(keyword)
+  }, [keyword])
 
-  useEffect(() => {}, [])
-
+  useEffect(() => {
+    let newData = arFilterByKeyword(myData, keyword)
+    newData = sortOfType(newData, whoSort, sbiSortType, bempSortType)
+    setDisplay(newData)
+  }, [keyword, whoSort, sbiSortType, bempSortType])
   return (
     <>
       {/* section 1  */}
@@ -114,7 +170,7 @@ function OnePage() {
       </section>
 
       {/* section 3  */}
-      <section className="sec3 d-flex">
+      <section className="sec3 d-flex justify-content-between">
         <div className="sec3Inputs col-lg-5">
           {/* 縣市搜尋 input */}
           <input
@@ -131,6 +187,7 @@ function OnePage() {
               if (cityInput === '請輸入縣市...' || cityInputValue) {
                 setCityInput('')
                 setCityInputValue('')
+                setArInputValue('')
               }
             }}
             onChange={(e) => {
@@ -150,24 +207,25 @@ function OnePage() {
                 setCityInputValue('')
               }
               setCityInputShow(!cityInputShow)
+              setArInputValue('')
+              setArInputShow(false)
             }}
           ></i>
+          {/* 縣市搜尋解果 */}
           {cityInputShow ? (
             <div className="selectOption">
-              {cityInputKeyword(city, cityInputValue).map((v, i) => {
+              {cityInputOfSearch(city, cityInputValue).map((v, i) => {
                 return (
-                  <>
-                    <button
-                      key={i}
-                      onClick={() => {
-                        // setCity(v)
-                        setCityInputValue(v.name)
-                        setCityInputShow(false)
-                      }}
-                    >
-                      {v.name}
-                    </button>
-                  </>
+                  <button
+                    key={i}
+                    onClick={() => {
+                      // setCity(v)
+                      setCityInputValue(v.name)
+                      setCityInputShow(false)
+                    }}
+                  >
+                    {v.name}
+                  </button>
                 )
               })}
             </div>
@@ -178,24 +236,60 @@ function OnePage() {
           <input
             type="text"
             className="sec3SecondInput"
-            placeholder="搜尋站點"
-            value={inputValue}
+            placeholder="搜尋站點..."
+            value={arInputValue}
+            onClick={() => {
+              if (arInputValue === '搜尋站點...' || arInputValue) {
+                setArInputValue('')
+              }
+            }}
             onChange={(e) => {
-              setInpultValue(e.target.value)
+              setArInputValue(e.target.value)
+              setArInputShow(true)
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setKeyword(arInputValue)
+                setArInputShow(false)
+              }
             }}
           />
           <i
             className="fa-solid fa-magnifying-glass sec3SecondIcon"
             onClick={() => {
-              setKeyword(inputValue)
+              setKeyword(arInputValue)
+              setArInputShow(false)
             }}
           ></i>
-          {/* checkedBox 勾選的部分 */}
+          {arInputShow ? (
+            <div className="arFilter d-flex flex-column align-items-start">
+              {cityOnlyTaipei(
+                arFilterDisplay(myData, arInputValue),
+                cityInputValue
+              ).map((v, i) => {
+                return (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setArInputValue(v.sna)
+                      setArInputShow(false)
+                    }}
+                  >
+                    {v.sna}
+                  </button>
+                )
+              })}
+            </div>
+          ) : (
+            ''
+          )}
+
+          {/* city checkedBox 勾選的部分 */}
           {cityInputValue === '' ? (
             ''
           ) : (
             <div className="d-flex flex-wrap">
-              {cityInputKeyword(city, cityInputValue).map((v, i) => {
+              {cityInputOfSearch(city, cityInputValue).map((v, i) => {
                 return (
                   <Fragment key={i}>
                     <MyChecked vData={v} />
@@ -670,7 +764,6 @@ function OnePage() {
           </defs>
         </svg>
       </section>
-
       {/* section 4 */}
       <section className="sec4">
         <table className="table table-striped sec4Table">
@@ -687,41 +780,73 @@ function OnePage() {
               </th>
               <th className="text-center">
                 <span>可借車輛</span>
+
+                {sbiSortType === 'ase' ? (
+                  <i
+                    className="fa-solid fa-arrow-down-short-wide"
+                    onClick={() => {
+                      setSbiSortType('desc')
+                      setWhoSort('sbi')
+                    }}
+                  ></i>
+                ) : (
+                  <i
+                    className="fa-solid fa-arrow-up-wide-short"
+                    onClick={() => {
+                      setSbiSortType('ase')
+                      setWhoSort('sbi')
+                    }}
+                  ></i>
+                )}
               </th>
               <th className="text-center">
                 <span>可還空位</span>
+
+                {bempSortType === 'ase' ? (
+                  <i
+                    className="fa-solid fa-arrow-down-short-wide"
+                    onClick={() => {
+                      setBempSortType('desc')
+                      setWhoSort('bemp')
+                    }}
+                  ></i>
+                ) : (
+                  <i
+                    className="fa-solid fa-arrow-up-wide-short"
+                    onClick={() => {
+                      setBempSortType('ase')
+                      setWhoSort('bemp')
+                    }}
+                  ></i>
+                )}
               </th>
             </tr>
           </thead>
           <tbody>
             {cityInputValue === '台北市' ? (
-              filterByKeyword(myData, keyword).map((v, i) => {
+              display.map((v, i) => {
                 return (
-                  <>
-                    <tr className="trTd" key={i}>
-                      <td className="text-center">台北市</td>
-                      <td className="text-center"> {v.sarea}</td>
-                      <td className="text-center">{v.ar}</td>
-                      <td className="text-center quantityColor">
-                        <span>{v.sbi}</span>
-                      </td>
-                      <td className="text-center quantityColor">
-                        <span>{v.bemp}</span>
-                      </td>
-                    </tr>
-                  </>
+                  <tr className="trTd" key={i}>
+                    <td className="text-center">台北市</td>
+                    <td className="text-center"> {v.sarea}</td>
+                    <td className="text-center">{v.sna}</td>
+                    <td className="text-center quantityColor">
+                      <span>{v.sbi}</span>
+                    </td>
+                    <td className="text-center quantityColor">
+                      <span>{v.bemp}</span>
+                    </td>
+                  </tr>
                 )
               })
             ) : (
-              <>
-                <tr>
-                  <td className="text-center">目前尚未開放~</td>
-                  <td className="text-center">-</td>
-                  <td className="text-center">-</td>
-                  <td className="text-centerr">-</td>
-                  <td className="text-center">-</td>
-                </tr>
-              </>
+              <tr>
+                <td className="text-center">目前尚未開放~</td>
+                <td className="text-center">-</td>
+                <td className="text-center">-</td>
+                <td className="text-center">-</td>
+                <td className="text-center">-</td>
+              </tr>
             )}
           </tbody>
         </table>

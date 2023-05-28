@@ -67,16 +67,8 @@ section{
     border-radius: 7px;
     margin-bottom: 20px;
     color:#B5CC22;
-    /* font-weight: 500;
-    font-family: 'Noto Sans CJK TC';
-    font-style: normal;
-    font-size: 18px;
-    line-height: 24px; */
 }
 
-/* .checkOption > input[type=checkbox]:checked{
-    color: #B5CC22;
-} */
 .sec3SecondInput{
     color: #AEAEAE;
     width: 277px;
@@ -85,11 +77,8 @@ section{
     background-color:#F6F6F6;
     border: none;
     border-radius: 7px;
-    /* font-family: 'Noto Sans CJK TC';
-    font-style: normal;
-    font-weight: 500;
-    font-size: 18px;
-    line-height: 20px; */
+    position: relative;
+    color: #B5CC22;
 }
 .sec3FirstIcon{
     transform: translate(-30px,-3px);
@@ -174,4 +163,55 @@ section{
     font-weight: 400;
     font-size: 16px;
     line-height: 24px;
+}
+.trTitle > th > i{
+    padding-left: 10px;
+    color: white;
+}
+.arFilter{
+    width: 277px;
+    background-color: #F6F6F6;
+    border-radius: 10px;
+    overflow: hidden;
+    position: absolute;
+    top: 50px;
+    left: 185px;
+    padding: 10px;
+}
+.arFilter > button{
+    border: none;
+    background-color: #F6F6F6;
+    padding: 15px;
+    font-family: 'Noto Sans CJK TC';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 20px;
+}
+.arFilter > button:hover{
+    border: none;
+    background-color: #F6F6F6;
+    padding: 15px;
+    font-family: 'Noto Sans CJK TC';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 20px;
+    color: #B5CC22;
+}
+
+.sortButtonDefault{
+    margin:10px;
+    border:none;
+    padding: 5px 10px;
+    background-color: rgb(199, 199, 199);
+    border-radius: 7px;
+}
+.sortButtonClick{
+    margin:10px;
+    border:none;
+    padding: 5px 10px;
+    background-color: #B5CC22;
+    border-radius: 7px;
+    color: white;
 }
