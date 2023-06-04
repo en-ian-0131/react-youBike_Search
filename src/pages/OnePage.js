@@ -116,7 +116,7 @@ function OnePage() {
   useEffect(() => {
     getYouBikeData()
     setArInputValue(keyword)
-  }, [keyword])
+  }, [])
 
   useEffect(() => {
     let newData = arFilterByKeyword(myData, keyword)
@@ -125,45 +125,6 @@ function OnePage() {
   }, [keyword, whoSort, sbiSortType, bempSortType])
   return (
     <>
-      {/* section 1  */}
-      <section className="sec1">
-        <nav className="d-flex justify-content-between align-items-center">
-          <div className="d-flex">
-            <Link to="#">
-              <img src="imgs/logo.jpg" alt="" />
-            </Link>
-            <ul className="d-flex align-items-center m-lg-0">
-              <li className="list-unstyled">
-                <Link to="#" className="nav-link" style={{ color: '#b5cc22' }}>
-                  使用說明
-                </Link>
-              </li>
-              <li className="list-unstyled ps-lg-4">
-                <Link to="#" className="nav-link">
-                  收費方式
-                </Link>
-              </li>
-              <li className="list-unstyled ps-lg-4">
-                <Link to="#" className="nav-link">
-                  站點資訊
-                </Link>
-              </li>
-              <li className="list-unstyled ps-lg-4">
-                <Link to="#" className="nav-link">
-                  最新消息
-                </Link>
-              </li>
-              <li className="list-unstyled ps-lg-4">
-                <Link to="#" className="nav-link">
-                  活動專區
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <button className="sec1Botton">登入</button>
-        </nav>
-      </section>
-
       {/* section 2  */}
       <section>
         <p className="sec2p">站點資訊</p>
@@ -241,6 +202,7 @@ function OnePage() {
             onClick={() => {
               if (arInputValue === '搜尋站點...' || arInputValue) {
                 setArInputValue('')
+                setDisplay(myData)
               }
             }}
             onChange={(e) => {

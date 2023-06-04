@@ -215,3 +215,12 @@ section{
     border-radius: 7px;
     color: white;
 }
+
+.page{
+    color:#677510;
+    font-family: 'Noto Sans CJK TC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 24px;
+}
