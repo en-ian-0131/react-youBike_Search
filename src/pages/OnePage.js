@@ -1,5 +1,4 @@
 import React, { useEffect, useState, Fragment } from 'react'
-import { Link } from 'react-router-dom'
 import '../styles/OnePage.css'
 import MyChecked from '../components/MyChecked'
 import axios from 'axios'
